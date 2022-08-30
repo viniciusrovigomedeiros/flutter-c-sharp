@@ -12,13 +12,21 @@ class UsuarioRepository {
   List<UsuarioModel> usuarios = [];
 
   Future<List<UsuarioModel>> getAllUsers() async {
-    final response = await dio.get('http://192.168.0.65/api/Usuario/');
+    try {
+      final response = await dio.get<List>('http://192.168.0.65/api/Usuario/');
+      print(response);
+      return response.data!.map((e) => UsuarioModel.fromMap(e)).toList();
+    } on DioError catch (e) {
+      print(e);
+      rethrow;
+    }
+    // usuarios = List.from(response.data.map((user) {
+    //   return UsuarioModel.fromMap(user);
+    // }));
+  }
 
-    usuarios = List.from(response.data.map((user) {
-      return UsuarioModel.fromMap(user);
-    }));
-
-    print(response);
-    return usuarios;
+  Future<UsuarioModel> delete(int id) async {
+    final response = await dio.delete('http://192.168.0.65/api/Usuario/$id');
+    return response.data!.map((e) => UsuarioModel.fromMap(e));
   }
 }
